@@ -38,24 +38,24 @@
             const goalHome = 0
             const goalAway = 0
 
-            let colDivHead = document.createElement('div');
-            colDivHead.setAttribute('class', 'container text-center');
+            let colDivHead = document.createElement("div");
+            colDivHead.setAttribute("class", "container text-center");
 
             let gameTime = document.createElement("h3");
             gameTime.innerHTML = new Date(matchData.matchDateTime).toLocaleString()
             
 
-            let colDivRow = document.createElement('div');
-            colDivRow.setAttribute('class', 'row');
+            let colDivRow = document.createElement("div");
+            colDivRow.setAttribute("class", "row");
 
-            let colRowLeft = document.createElement('div');
-            colRowLeft.setAttribute('class', 'col-5');
+            let colRowLeft = document.createElement("div");
+            colRowLeft.setAttribute("class", "col-5");
 
-            let colRowMiddle = document.createElement('div');
-            colRowMiddle.setAttribute('class', 'col-2');
+            let colRowMiddle = document.createElement("div");
+            colRowMiddle.setAttribute("class", "col-2");
 
-            let colRowRight = document.createElement('div');
-            colRowRight.setAttribute('class', 'col-5');
+            let colRowRight = document.createElement("div");
+            colRowRight.setAttribute("class", "col-5");
 
             // let teamLogoHome = document.createElement("img")
             // teamLogoHome.setAttribute("src", matchData.team1.teamIconUrl)
@@ -75,24 +75,24 @@
             goalGettersHeadline.innerHTML = "Torschützen"
 
             let goalGetters = document.createElement("div");
-            goalGetters.setAttribute('class', 'col-md-4 mb-4');
+            goalGetters.setAttribute("class", "col-md-4 mb-4");
 
-            let divRow = document.createElement('div');
-            divRow.setAttribute('class', 'row');
+            let divRow = document.createElement("div");
+            divRow.setAttribute("class", "row");
 
             var scoreTeamHome = 0
             var scoreTeamAway = 0
             matchData.goals.forEach(goal => {
 
-                let rowLeft = document.createElement('div');
-                rowLeft.setAttribute('class', 'col-5 mb-2');
+                let rowLeft = document.createElement("div");
+                rowLeft.setAttribute("class", "col-5 mb-2");
 
 
-                let rowMiddle = document.createElement('div');
-                rowMiddle.setAttribute('class', 'col-2 mb-2');
+                let rowMiddle = document.createElement("div");
+                rowMiddle.setAttribute("class", "col-2 mb-2");
 
-                let rowRight = document.createElement('div');
-                rowRight.setAttribute('class', 'col-5 mb-2');
+                let rowRight = document.createElement("div");
+                rowRight.setAttribute("class", "col-5 mb-2");
                 
                 rowMiddle.innerHTML = goal.scoreTeam1 + " : " + goal.scoreTeam2
 
@@ -125,11 +125,11 @@
             let lineBreak = document.createElement("br")
 
             let goalsHomeTeam = document.createElement("p");
-            goalsHomeTeam.setAttribute('class', 'fs-1 fw-bolder');
+            goalsHomeTeam.setAttribute("class", "fs-1 fw-bolder");
             goalsHomeTeam.innerHTML = matchData.matchResults[1].pointsTeam1
 
             let goalsAwayTeam = document.createElement("p");
-            goalsAwayTeam.setAttribute('class', 'fs-1 fw-bolder');
+            goalsAwayTeam.setAttribute("class", "fs-1 fw-bolder");
             goalsAwayTeam.innerHTML = matchData.matchResults[1].pointsTeam2
 
             colRowLeft.appendChild(teamNameHome)
@@ -147,7 +147,7 @@
             colDivHead.appendChild(colDivRow)
             colDivHead.appendChild(goalGettersHeadline)
             colDivHead.appendChild(divRow)
-            document.getElementById('matchDetail').appendChild(colDivHead);
+            document.getElementById("matchDetail").appendChild(colDivHead);
         }
 }
     </script>

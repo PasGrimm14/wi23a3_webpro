@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bundesliga</title>
+
+    <!-- Bootstrap Einbindung Style-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- Bootstrap Icons eindingen-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+    <!-- <script language="javascript" type="text/javascript" src="script.js"></script> -->
+    <script>
+        window.onload = function() {
+            console.log("Seite geladen")
+
+            fetch("https://api.openligadb.de/getbltable/bl1/2024").then(response => response.json()).then(matchJson => {
+                console.log(matchJson)
+                getTableOfBL(matchJson);
+            })
+        }
+
+        function getTableOfBL(tableJson) {
+            const tableBody = document.getElementById("tableBody");
+            tableJson.forEach((team, index) => {
+                const tableRow = document.createElement("tr");
+                tableRow.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${team.teamName}</td>
+                    <td>${team.matches}</td>
+                    <td>${team.won}</td>
+                    <td>${team.draw}</td>
+                    <td>${team.lost}</td>
+                    <td>${team.goals}</td>
+                    <td>${team.opponentGoals}</td>
+                    <td>${team.goalDiff}</td>
+                    <td>${team.points}</td>
+                `;
+                tableBody.appendChild(tableRow);
+            })
+        }
+    </script>
+</head>
+
+<body>
+    <!-- NAVIGATIONSLEISTE -->
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <h1 class="align-middle">Bundesliga-Tracker</h1></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+        <div class="collapse navbar-collapse me-2 float-end" id="navbarSupportedContent">
+            <div class="float-end">
+                <a class="navbar-brand" href="table.html">
+                    <h3 class="align-middle">Tabelle</h1>
+                </a>
+                
+            </div>
+            <div class="float-end">
+                <a class="navbar-brand" href="goalgetter.html">
+                    <h3 class="align-middle">Torschützen</h1>
+                </a>
+                
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h1 class="mb-4">Bundesliga Tabelle 2024</h1>
+        <table class="table table-striped table-bordered table-hover text-center">
+            <thead class="table-dark">
+                <tr>
+                    <th>Platz</th>
+                    <th>Team</th>
+                    <th>Spiele</th>
+                    <th>Siege</th>
+                    <th>Unentschieden</th>
+                    <th>Niederlagen</th>
+                    <th>Tore</th>
+                    <th>Gegentore</th>
+                    <th>Tordifferenz</th>
+                    <th>Punkte</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <!-- Hier werden die Daten eingefügt -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Bootstrap Einbindung JS-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
