@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bundesliga</title>
+
     <!-- Bootstrap Einbindung Style-->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
@@ -11,103 +13,146 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
     <!-- Skript-Abschnitt -->
     <script>
+        // Funktion, die beim Laden der Seite ausgeführt wird
         window.onload = function() {
-            // Test in der Konsole, ob Daten angekommen sind
             console.log("Seite geladen")
+            // Hole die Match-ID
+            let idMatch = getMatchID();
+            // Festelgen der API-URL
+            let searchUrl = "https://api.openligadb.de/getmatchdata/" + idMatch
+            console.log(searchUrl);
             // API-Aufruf
-            fetch("https://api.openligadb.de/getmatchdata/bl1").then(response => response.json()).then(matchJson => {
+            fetch(searchUrl).then(response => response.json()).then(matchJson => {
                 console.log(matchJson)
-                // Übergabe des Response-Bodys an die Function "createSingleMatchCard"
-                createSingleMatchCard(matchJson);
+                createMatchDetails(matchJson);
+            }
+        )
+        // Funktion um die Match-ID aus dem Header zu bekommen
+        function getMatchID () {
+            let urlString = window.location;
+            let url = new URL(urlString);
+
+            let matchID = url.searchParams.get("id");
+            console.log(matchID);
+            return matchID
+        }
+        
+        // Funktion um die Details eines Matches zu erstellen
+        function createMatchDetails(matchData) {
+            // Container für alle Werte
+            let colDivHead = document.createElement("div");
+            colDivHead.setAttribute("class", "container text-center");
+            // Erstellen des Spielzeitpunktes
+            let gameTime = document.createElement("h3");
+            gameTime.innerHTML = new Date(matchData.matchDateTime).toLocaleString()
+            // Erstellen einer Zeile im Container
+            let colDivRow = document.createElement("div");
+            colDivRow.setAttribute("class", "row");
+            // Aufteilen der Zeile in drei Bereiche
+            let colRowLeft = document.createElement("div");
+            colRowLeft.setAttribute("class", "col-5");
+
+            let colRowMiddle = document.createElement("div");
+            colRowMiddle.setAttribute("class", "col-2");
+
+            let colRowRight = document.createElement("div");
+            colRowRight.setAttribute("class", "col-5");
+            // Festlegen der Heimmanschaft
+            let teamNameHome = document.createElement("h4")
+            teamNameHome.innerHTML = matchData.team1.teamName
+            // Festlegen der Gastmanschaft
+            let teamNameAway = document.createElement("h4")
+            teamNameAway.innerHTML = matchData.team2.teamName
+            // Festlegen der Überschrift für die Torschützen
+            let goalGettersHeadline = document.createElement("h3");
+            goalGettersHeadline.setAttribute("class", "mt-5")
+            goalGettersHeadline.innerHTML = "Torschützen"
+            // Festlegen eines Containers für die einzelnen Torschützen
+            let goalGetters = document.createElement("div");
+            goalGetters.setAttribute("class", "col-md-4 mb-4");
+            // Erstellen einer Zeile im Container
+            let divRow = document.createElement("div");
+            divRow.setAttribute("class", "row");
+            // Variablen für die Anzahl der Tore
+            var scoreTeamHome = 0
+            var scoreTeamAway = 0
+            // Schleife für die Torschützen
+            matchData.goals.forEach(goal => {
+                // Aufteilen der Zeile in drei Bereiche
+                let rowLeft = document.createElement("div");
+                rowLeft.setAttribute("class", "col-5 mb-2");
+
+                let rowMiddle = document.createElement("div");
+                rowMiddle.setAttribute("class", "col-2 mb-2");
+
+                let rowRight = document.createElement("div");
+                rowRight.setAttribute("class", "col-5 mb-2");
+                // Aktuelles Ergebnis in der Mittel-Spalte anzeigen
+                rowMiddle.innerHTML = goal.scoreTeam1 + " : " + goal.scoreTeam2
+                // If-Statement für Erhöhung der Tore
+                if (goal.scoreTeam1 > scoreTeamHome) {
+                    scoreTeamHome = goal.scoreTeam1;
+                    let goalGetter = document.createElement("p");
+                    // Prüfung, ob Informationen zum Tor verfügbar sind
+                    if (Object.is(goal.matchMinute,null)){
+                        goalGetter.innerHTML = "k.A."
+                    }else{
+                        goalGetter.innerHTML = goal.goalGetterName + " (" + goal.matchMinute +" min)"
+                    }
+                    
+                    rowLeft.appendChild(goalGetter)
+                } else if (goal.scoreTeam2 > scoreTeamAway) {
+                    scoreTeamAway = goal.scoreTeam2;
+                    let goalGetter = document.createElement("p");
+                    if (Object.is(goal.matchMinute,null)){
+                        goalGetter.innerHTML = "k.A."
+                    }else{
+                        goalGetter.innerHTML = goal.goalGetterName + " (" + goal.matchMinute +" min)"
+                    }
+                    rowRight.appendChild(goalGetter)
+                }
+
+                divRow.appendChild(rowLeft);
+                divRow.appendChild(rowMiddle)
+                divRow.appendChild(rowRight);
             })
+
+            let lineBreak = document.createElement("br")
+
+            let goalsHomeTeam = document.createElement("p");
+            goalsHomeTeam.setAttribute("class", "fs-1 fw-bolder");
+            goalsHomeTeam.innerHTML = matchData.matchResults[1].pointsTeam1
+
+            let goalsAwayTeam = document.createElement("p");
+            goalsAwayTeam.setAttribute("class", "fs-1 fw-bolder");
+            goalsAwayTeam.innerHTML = matchData.matchResults[1].pointsTeam2
+
+            colRowLeft.appendChild(teamNameHome)
+            colRowRight.appendChild(teamNameAway)
+
+            colRowLeft.appendChild(document.createElement("br"))
+            colRowLeft.appendChild(goalsHomeTeam)
+            colRowRight.appendChild(document.createElement("br"))
+            colRowRight.appendChild(goalsAwayTeam)
+
+            colDivRow.appendChild(colRowLeft)
+            colDivRow.appendChild(colRowMiddle)
+            colDivRow.appendChild(colRowRight)
+            colDivHead.appendChild(gameTime)
+            colDivHead.appendChild(colDivRow)
+            colDivHead.appendChild(goalGettersHeadline)
+            colDivHead.appendChild(divRow)
+            document.getElementById("matchDetail").appendChild(colDivHead);
         }
-
-        function createSingleMatchCard(matchJson) {
-            // Erstellen einer Überschrift für den aktuellen Spieltag
-            let headlineMatchday = document.createElement("h1");
-            // der Headline als Text den Spieltag + die Spieltagsnummer übergeben
-            headlineMatchday.innerHTML = "Ergebnise Spieltag " + matchJson[0].group.groupOrderID;
-            // in der HTML der Überschrift den Wert übergeben
-            document.getElementById("matches").appendChild(headlineMatchday);
-
-            // Schleife um durch jedes Objekt im Response zu iterieren
-            matchJson.forEach(match => {
-                // Erstellen eines Divs
-                let colDiv = document.createElement("div");
-                // dem Div die Klasse col-md-4 (Spalte nimmt bei mittleren Bildschirmen 4/12 des Containers ein) und mb-4 (Abstand nach unten) zugewiesen
-                colDiv.setAttribute("class", "col-md-4 mb-4");
-
-                // Erstellen eines Bootstrap Card-Elements
-                let cardDiv = document.createElement("div");
-                // Klasse Card zuweisen
-                cardDiv.setAttribute("class", "card");
-                // Bestimmen der Style-Eigenschaften
-                cardDiv.setAttribute("style", "width: 18rem;");
-
-                //Für jedes Spiel machen wir die Card wieder sichtbar
-                let cardElement = document.createElement("div");
-                cardElement.setAttribute("class", "card");
-                //Wir setzen den von Bootstrap erwarteten Style wieder ein
-                cardElement.setAttribute("style", "width: 18rem");
-
-                // Erstellen eines Card-Bodys
-                let cardBodyDiv = document.createElement("div");
-                cardBodyDiv.setAttribute("class", "card-body");
-
-                // Erstellen eines Card-Titels
-                let cardTitle = document.createElement("h3");
-                cardTitle.setAttribute("class", "card-title");
-                // dem Card-Titel den Text Heimmanschaft vs Gastmannschaft zuweisen
-                cardTitle.innerHTML = match.team1.teamName +  " vs " + match.team2.teamName;
-
-                // Erstellen eines Card-Textes
-                let cardText = document.createElement("p");
-                cardText.setAttribute("class", "card-text");
-
-                // Erstellen eines Textes für das Datum
-                let pDatum = document.createElement("p");
-                // Übergabe des Datum an eine Funktion die es als String parst
-                pDatum.innerHTML = new Date(match.matchDateTime).toLocaleString();
-
-                // Erstellen des Textes des Ergebnisses
-                let pErgebnis = document.createElement("p");
-                pErgebnis.innerHTML = "Ergebnis: " + match.matchResults[1].pointsTeam1 + " : " + match.matchResults[1].pointsTeam2;
-
-                // Erstellen eines Buttons mit dem man die Match-Details anschauen kann
-                let detailButton = document.createElement("a");
-                detailButton.setAttribute("href", "details.html?id="+match.matchID);
-                detailButton.setAttribute("class", "btn btn-danger");
-                detailButton.innerHTML = "Details anzeigen";
-
-                // Alle Elemente werden dem jeweiligen Card-Element hinzugefügt
-                cardText.appendChild(pDatum);
-                cardText.appendChild(pErgebnis);
-
-                // Card-Body erhält seine Elemente
-                cardBodyDiv.appendChild(cardTitle);
-                cardBodyDiv.appendChild(cardText);
-                cardBodyDiv.appendChild(detailButton);
-                
-                //CardElement den Cardbody anfügen
-                cardElement.appendChild(cardBodyDiv);
-
-                //CardDiv das Cardelement hinzufügen
-                cardDiv.appendChild(cardElement);
-
-                //ColDiv das Carddiv hinzufügen
-                colDiv.appendChild(cardElement);
-
-                // alle Cards der HTML übergeben
-                document.getElementById("matches").appendChild(colDiv);
-            });
-        }
+}
     </script>
+
 </head>
 
 <body>
     <!-- NAVIGATIONSLEISTE -->
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
-        <div class="container-fluid" id="navbarSupportedContent">
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
               <li class="nav-item">
                 <a class="navbar-brand" href="#">
@@ -133,10 +178,9 @@
             </ul>
           </div>
     </nav>
-
+    
     <div class="container mt-4">
-        <h1 class="mb-4" id="headlineMatchday"></h1>
-        <div id="matches" class="row"></div>
+        <div id="matchDetail" class="row"></div>
     </div>
 
     <!-- Bootstrap Einbindung JS-->
