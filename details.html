@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bundesliga</title>
+
+    <!-- Bootstrap Einbindung Style-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- Bootstrap Icons eindingen-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+    <!-- <script language="javascript" type="text/javascript" src="script.js"></script> -->
+    <script>
+        window.onload = function() {
+            console.log("Seite geladen")
+            let idMatch = getMatchID();
+            let searchUrl = "https://api.openligadb.de/getmatchdata/" + idMatch
+            console.log(searchUrl);
+
+            fetch(searchUrl).then(response => response.json()).then(matchJson => {
+                console.log(matchJson)
+                createMatchDetails(matchJson);
+            }
+        )
+
+        function getMatchID () {
+            let urlString = window.location;
+            let url = new URL(urlString);
+
+            let matchID = url.searchParams.get("id");
+            console.log(matchID);
+            return matchID
+        }
+        
+        function createMatchDetails(matchData) {
+            const goalHome = 0
+            const goalAway = 0
+
+            let colDivHead = document.createElement('div');
+            colDivHead.setAttribute('class', 'container text-center');
+
+            let gameTime = document.createElement("h3");
+            gameTime.innerHTML = new Date(matchData.matchDateTime).toLocaleString()
+            
+
+            let colDivRow = document.createElement('div');
+            colDivRow.setAttribute('class', 'row');
+
+            let colRowLeft = document.createElement('div');
+            colRowLeft.setAttribute('class', 'col-5');
+
+            let colRowMiddle = document.createElement('div');
+            colRowMiddle.setAttribute('class', 'col-2');
+
+            let colRowRight = document.createElement('div');
+            colRowRight.setAttribute('class', 'col-5');
+
+            // let teamLogoHome = document.createElement("img")
+            // teamLogoHome.setAttribute("src", matchData.team1.teamIconUrl)
+
+            let teamNameHome = document.createElement("h4")
+            teamNameHome.innerHTML = matchData.team1.teamName
+
+            let teamNameAway = document.createElement("h4")
+            teamNameAway.innerHTML = matchData.team2.teamName
+
+            let headlineHalftime = document.createElement("h3");
+            headlineHalftime.innerHTML = "Halbzeitergebnis"
+
+
+            let goalGettersHeadline = document.createElement("h3");
+            goalGettersHeadline.setAttribute("class", "mt-5")
+            goalGettersHeadline.innerHTML = "Torschützen"
+
+            let goalGetters = document.createElement("div");
+            goalGetters.setAttribute('class', 'col-md-4 mb-4');
+
+            let divRow = document.createElement('div');
+            divRow.setAttribute('class', 'row');
+
+            var scoreTeamHome = 0
+            var scoreTeamAway = 0
+            matchData.goals.forEach(goal => {
+
+                let rowLeft = document.createElement('div');
+                rowLeft.setAttribute('class', 'col-5 mb-2');
+
+
+                let rowMiddle = document.createElement('div');
+                rowMiddle.setAttribute('class', 'col-2 mb-2');
+
+                let rowRight = document.createElement('div');
+                rowRight.setAttribute('class', 'col-5 mb-2');
+                
+                rowMiddle.innerHTML = goal.scoreTeam1 + " : " + goal.scoreTeam2
+
+                if (goal.scoreTeam1 > scoreTeamHome) {
+                    scoreTeamHome = goal.scoreTeam1;
+                    let goalGetter = document.createElement("p");
+                    if (Object.is(goal.matchMinute,null)){
+                        goalGetter.innerHTML = ""
+                    }else{
+                        goalGetter.innerHTML = goal.goalGetterName + " (" + goal.matchMinute +" min)"
+                    }
+                    
+                    rowLeft.appendChild(goalGetter)
+                } else if (goal.scoreTeam2 > scoreTeamAway) {
+                    scoreTeamAway = goal.scoreTeam2;
+                    let goalGetter = document.createElement("p");
+                    if (Object.is(goal.matchMinute,null)){
+                        goalGetter.innerHTML = ""
+                    }else{
+                        goalGetter.innerHTML = goal.goalGetterName + " (" + goal.matchMinute +" min)"
+                    }
+                    rowRight.appendChild(goalGetter)
+                }
+
+                divRow.appendChild(rowLeft);
+                divRow.appendChild(rowMiddle)
+                divRow.appendChild(rowRight);
+            })
+
+            let lineBreak = document.createElement("br")
+
+            let goalsHomeTeam = document.createElement("p");
+            goalsHomeTeam.setAttribute('class', 'fs-1 fw-bolder');
+            goalsHomeTeam.innerHTML = matchData.matchResults[1].pointsTeam1
+
+            let goalsAwayTeam = document.createElement("p");
+            goalsAwayTeam.setAttribute('class', 'fs-1 fw-bolder');
+            goalsAwayTeam.innerHTML = matchData.matchResults[1].pointsTeam2
+
+            colRowLeft.appendChild(teamNameHome)
+            colRowRight.appendChild(teamNameAway)
+
+            colRowLeft.appendChild(document.createElement("br"))
+            colRowLeft.appendChild(goalsHomeTeam)
+            colRowRight.appendChild(document.createElement("br"))
+            colRowRight.appendChild(goalsAwayTeam)
+
+            colDivRow.appendChild(colRowLeft)
+            colDivRow.appendChild(colRowMiddle)
+            colDivRow.appendChild(colRowRight)
+            colDivHead.appendChild(gameTime)
+            colDivHead.appendChild(colDivRow)
+            colDivHead.appendChild(goalGettersHeadline)
+            colDivHead.appendChild(divRow)
+            document.getElementById('matchDetail').appendChild(colDivHead);
+        }
+}
+    </script>
+
+</head>
+
+<body>
+    <!-- NAVIGATIONSLEISTE -->
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="index.html">
+                <!-- <span class="text-warning"><svg xmlns="http://www.w3.org/2000/svg" width="35" height="35"
+                        fill="currentColor" class="bi bi-robot me-3" viewBox="0 0 16 16">
+                        <path
+                            d="M6 12.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5M3 8.062C3 6.76 4.235 5.765 5.53 5.886a26.6 26.6 0 0 0 4.94 0C11.765 5.765 13 6.76 13 8.062v1.157a.93.93 0 0 1-.765.935c-.845.147-2.34.346-4.235.346s-3.39-.2-4.235-.346A.93.93 0 0 1 3 9.219zm4.542-.827a.25.25 0 0 0-.217.068l-.92.9a25 25 0 0 1-1.871-.183.25.25 0 0 0-.068.495c.55.076 1.232.149 2.02.193a.25.25 0 0 0 .189-.071l.754-.736.847 1.71a.25.25 0 0 0 .404.062l.932-.97a25 25 0 0 0 1.922-.188.25.25 0 0 0-.068-.495c-.538.074-1.207.145-1.98.189a.25.25 0 0 0-.166.076l-.754.785-.842-1.7a.25.25 0 0 0-.182-.135" />
+                        <path
+                            d="M8.5 1.866a1 1 0 1 0-1 0V3h-2A4.5 4.5 0 0 0 1 7.5V8a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1v1a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-1a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1v-.5A4.5 4.5 0 0 0 10.5 3h-2zM14 7.5V13a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V7.5A3.5 3.5 0 0 1 5.5 4h5A3.5 3.5 0 0 1 14 7.5" />
+                    </svg></span> -->
+                <h1 class="align-middle">Fußball-Tracker</h1></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+        <div class="collapse navbar-collapse me-2 float-end" id="navbarSupportedContent">
+            <div class="float-end">
+                <form class="d-flex" role="search">
+                    <input class="form-control me-2" id="searchInp" type="search" placeholder="Search"
+                        aria-label="Search">
+                    <button class="btn btn-outline-warning" id="searchBtn" type="submit"
+                        onclick="searchFootballApi()">Search</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container mt-4">
+        <div id="matchDetail" class="row"></div>
+    </div>
+
+    <!-- Bootstrap Einbindung JS-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
