@@ -11,20 +11,23 @@
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <!-- Bootstrap Icons eindingen-->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
-    <!-- <script language="javascript" type="text/javascript" src="script.js"></script> -->
+    <!-- Skript-Abschnitt -->
     <script>
+        // Funktion, die beim Laden der Seite ausgeführt wird
         window.onload = function() {
             console.log("Seite geladen")
+            // Hole die Match-ID
             let idMatch = getMatchID();
+            // Festelgen der API-URL
             let searchUrl = "https://api.openligadb.de/getmatchdata/" + idMatch
             console.log(searchUrl);
-
+            // API-Aufruf
             fetch(searchUrl).then(response => response.json()).then(matchJson => {
                 console.log(matchJson)
                 createMatchDetails(matchJson);
             }
         )
-
+        // Funktion um die Match-ID aus dem Header zu bekommen
         function getMatchID () {
             let urlString = window.location;
             let url = new URL(urlString);
@@ -34,20 +37,18 @@
             return matchID
         }
         
+        // Funktion um die Details eines Matches zu erstellen
         function createMatchDetails(matchData) {
-            const goalHome = 0
-            const goalAway = 0
-
+            // Container für alle Werte
             let colDivHead = document.createElement("div");
             colDivHead.setAttribute("class", "container text-center");
-
+            // Erstellen des Spielzeitpunktes
             let gameTime = document.createElement("h3");
             gameTime.innerHTML = new Date(matchData.matchDateTime).toLocaleString()
-            
-
+            // Erstellen einer Zeile im Container
             let colDivRow = document.createElement("div");
             colDivRow.setAttribute("class", "row");
-
+            // Aufteilen der Zeile in drei Bereiche
             let colRowLeft = document.createElement("div");
             colRowLeft.setAttribute("class", "col-5");
 
@@ -56,51 +57,45 @@
 
             let colRowRight = document.createElement("div");
             colRowRight.setAttribute("class", "col-5");
-
-            // let teamLogoHome = document.createElement("img")
-            // teamLogoHome.setAttribute("src", matchData.team1.teamIconUrl)
-
+            // Festlegen der Heimmanschaft
             let teamNameHome = document.createElement("h4")
             teamNameHome.innerHTML = matchData.team1.teamName
-
+            // Festlegen der Gastmanschaft
             let teamNameAway = document.createElement("h4")
             teamNameAway.innerHTML = matchData.team2.teamName
-
-            let headlineHalftime = document.createElement("h3");
-            headlineHalftime.innerHTML = "Halbzeitergebnis"
-
-
+            // Festlegen der Überschrift für die Torschützen
             let goalGettersHeadline = document.createElement("h3");
             goalGettersHeadline.setAttribute("class", "mt-5")
             goalGettersHeadline.innerHTML = "Torschützen"
-
+            // Festlegen eines Containers für die einzelnen Torschützen
             let goalGetters = document.createElement("div");
             goalGetters.setAttribute("class", "col-md-4 mb-4");
-
+            // Erstellen einer Zeile im Container
             let divRow = document.createElement("div");
             divRow.setAttribute("class", "row");
-
+            // Variablen für die Anzahl der Tore
             var scoreTeamHome = 0
             var scoreTeamAway = 0
+            // Schleife für die Torschützen
             matchData.goals.forEach(goal => {
-
+                // Aufteilen der Zeile in drei Bereiche
                 let rowLeft = document.createElement("div");
                 rowLeft.setAttribute("class", "col-5 mb-2");
-
 
                 let rowMiddle = document.createElement("div");
                 rowMiddle.setAttribute("class", "col-2 mb-2");
 
                 let rowRight = document.createElement("div");
                 rowRight.setAttribute("class", "col-5 mb-2");
-                
+                // Aktuelles Ergebnis in der Mittel-Spalte anzeigen
                 rowMiddle.innerHTML = goal.scoreTeam1 + " : " + goal.scoreTeam2
-
+                // If-Statement für Erhöhung der Tore
                 if (goal.scoreTeam1 > scoreTeamHome) {
                     scoreTeamHome = goal.scoreTeam1;
                     let goalGetter = document.createElement("p");
+                    // Prüfung, ob Informationen zum Tor verfügbar sind
                     if (Object.is(goal.matchMinute,null)){
-                        goalGetter.innerHTML = ""
+                        goalGetter.innerHTML = "k.A."
                     }else{
                         goalGetter.innerHTML = goal.goalGetterName + " (" + goal.matchMinute +" min)"
                     }
@@ -110,7 +105,7 @@
                     scoreTeamAway = goal.scoreTeam2;
                     let goalGetter = document.createElement("p");
                     if (Object.is(goal.matchMinute,null)){
-                        goalGetter.innerHTML = ""
+                        goalGetter.innerHTML = "k.A."
                     }else{
                         goalGetter.innerHTML = goal.goalGetterName + " (" + goal.matchMinute +" min)"
                     }
@@ -157,32 +152,31 @@
 <body>
     <!-- NAVIGATIONSLEISTE -->
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="index.html">
-                <!-- <span class="text-warning"><svg xmlns="http://www.w3.org/2000/svg" width="35" height="35"
-                        fill="currentColor" class="bi bi-robot me-3" viewBox="0 0 16 16">
-                        <path
-                            d="M6 12.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5M3 8.062C3 6.76 4.235 5.765 5.53 5.886a26.6 26.6 0 0 0 4.94 0C11.765 5.765 13 6.76 13 8.062v1.157a.93.93 0 0 1-.765.935c-.845.147-2.34.346-4.235.346s-3.39-.2-4.235-.346A.93.93 0 0 1 3 9.219zm4.542-.827a.25.25 0 0 0-.217.068l-.92.9a25 25 0 0 1-1.871-.183.25.25 0 0 0-.068.495c.55.076 1.232.149 2.02.193a.25.25 0 0 0 .189-.071l.754-.736.847 1.71a.25.25 0 0 0 .404.062l.932-.97a25 25 0 0 0 1.922-.188.25.25 0 0 0-.068-.495c-.538.074-1.207.145-1.98.189a.25.25 0 0 0-.166.076l-.754.785-.842-1.7a.25.25 0 0 0-.182-.135" />
-                        <path
-                            d="M8.5 1.866a1 1 0 1 0-1 0V3h-2A4.5 4.5 0 0 0 1 7.5V8a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1v1a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-1a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1v-.5A4.5 4.5 0 0 0 10.5 3h-2zM14 7.5V13a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V7.5A3.5 3.5 0 0 1 5.5 4h5A3.5 3.5 0 0 1 14 7.5" />
-                    </svg></span> -->
-                <h1 class="align-middle">Fußball-Tracker</h1></a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
-                aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-        </div>
-        <div class="collapse navbar-collapse me-2 float-end" id="navbarSupportedContent">
-            <div class="float-end">
-                <form class="d-flex" role="search">
-                    <input class="form-control me-2" id="searchInp" type="search" placeholder="Search"
-                        aria-label="Search">
-                    <button class="btn btn-outline-warning" id="searchBtn" type="submit"
-                        onclick="searchFootballApi()">Search</button>
-                </form>
-            </div>
-        </div>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <a class="navbar-brand" href="#">
+                    <img src="data:image/jpeg;base64,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" 
+                    alt="Logo" width="60" height="60" class="d-inline-block align-text-middle">
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="index.html">
+                    <h3>Aktueller Spieltag</h3>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="table.html">
+                    <h3>Tabelle</h3>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="goalgetter.html">
+                    <h3>Torschützen</h3>
+                </a>
+              </li>
+            </ul>
+          </div>
     </nav>
     
     <div class="container mt-4">

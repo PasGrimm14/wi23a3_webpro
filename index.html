@@ -1,79 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bundesliga</title>
-
     <!-- Bootstrap Einbindung Style-->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <!-- Bootstrap Icons eindingen-->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
-    <!-- <script language="javascript" type="text/javascript" src="script.js"></script> -->
+    <!-- Skript-Abschnitt -->
     <script>
         window.onload = function() {
+            // Test in der Konsole, ob Daten angekommen sind
             console.log("Seite geladen")
-
+            // API-Aufruf
             fetch("https://api.openligadb.de/getmatchdata/bl1").then(response => response.json()).then(matchJson => {
                 console.log(matchJson)
+                // Übergabe des Response-Bodys an die Function "createSingleMatchCard"
                 createSingleMatchCard(matchJson);
             })
         }
 
         function createSingleMatchCard(matchJson) {
-            // console.log(matchJson[1] ${match.team1.teamName} vs ${match.team2.teamName})
-            // console.log(matchJson.lenght)
+            // Erstellen einer Überschrift für den aktuellen Spieltag
             let headlineMatchday = document.createElement("h1");
+            // der Headline als Text den Spieltag + die Spieltagsnummer übergeben
             headlineMatchday.innerHTML = "Ergebnise Spieltag " + matchJson[0].group.groupOrderID;
+            // in der HTML der Überschrift den Wert übergeben
             document.getElementById("matches").appendChild(headlineMatchday);
 
+            // Schleife um durch jedes Objekt im Response zu iterieren
             matchJson.forEach(match => {
-                console.log(match.team1.teamName + "vs" + match.team2.teamName);
+                // Erstellen eines Divs
                 let colDiv = document.createElement("div");
+                // dem Div die Klasse col-md-4 (Spalte nimmt bei mittleren Bildschirmen 4/12 des Containers ein) und mb-4 (Abstand nach unten) zugewiesen
                 colDiv.setAttribute("class", "col-md-4 mb-4");
 
+                // Erstellen eines Bootstrap Card-Elements
                 let cardDiv = document.createElement("div");
+                // Klasse Card zuweisen
                 cardDiv.setAttribute("class", "card");
+                // Bestimmen der Style-Eigenschaften
                 cardDiv.setAttribute("style", "width: 18rem;");
 
-                //Für jeden Cocktail im Ergebnis machen wir die Card wieder sichtbar
+                //Für jedes Spiel machen wir die Card wieder sichtbar
                 let cardElement = document.createElement("div");
                 cardElement.setAttribute("class", "card");
                 //Wir setzen den von Bootstrap erwarteten Style wieder ein
                 cardElement.setAttribute("style", "width: 18rem");
 
+                // Erstellen eines Card-Bodys
                 let cardBodyDiv = document.createElement("div");
                 cardBodyDiv.setAttribute("class", "card-body");
 
+                // Erstellen eines Card-Titels
                 let cardTitle = document.createElement("h3");
                 cardTitle.setAttribute("class", "card-title");
-                // console.log(matchJson[i].matchID)
+                // dem Card-Titel den Text Heimmanschaft vs Gastmannschaft zuweisen
                 cardTitle.innerHTML = match.team1.teamName +  " vs " + match.team2.teamName;
 
+                // Erstellen eines Card-Textes
                 let cardText = document.createElement("p");
                 cardText.setAttribute("class", "card-text");
 
+                // Erstellen eines Textes für das Datum
                 let pDatum = document.createElement("p");
-                pDatum.innerHTML = new Date(match.matchDateTime).toLocaleString()
+                // Übergabe des Datum an eine Funktion die es als String parst
+                pDatum.innerHTML = new Date(match.matchDateTime).toLocaleString();
 
+                // Erstellen des Textes des Ergebnisses
                 let pErgebnis = document.createElement("p");
-                pErgebnis.innerHTML = "Ergebnis: " + match.matchResults[1].pointsTeam1 + " : " + match.matchResults[1].pointsTeam2
+                pErgebnis.innerHTML = "Ergebnis: " + match.matchResults[1].pointsTeam1 + " : " + match.matchResults[1].pointsTeam2;
 
+                // Erstellen eines Buttons mit dem man die Match-Details anschauen kann
                 let detailButton = document.createElement("a");
                 detailButton.setAttribute("href", "details.html?id="+match.matchID);
-                detailButton.setAttribute("class", "btn btn-primary");
+                detailButton.setAttribute("class", "btn btn-danger");
                 detailButton.innerHTML = "Details anzeigen";
 
-                cardText.appendChild(pDatum)
-                cardText.appendChild(pErgebnis)
+                // Alle Elemente werden dem jeweiligen Card-Element hinzugefügt
+                cardText.appendChild(pDatum);
+                cardText.appendChild(pErgebnis);
+
+                // Card-Body erhält seine Elemente
                 cardBodyDiv.appendChild(cardTitle);
                 cardBodyDiv.appendChild(cardText);
                 cardBodyDiv.appendChild(detailButton);
-                // cardBodyDiv.appendChild(detailButton);
-
-
+                
                 //CardElement den Cardbody anfügen
                 cardElement.appendChild(cardBodyDiv);
 
@@ -83,7 +97,7 @@
                 //ColDiv das Carddiv hinzufügen
                 colDiv.appendChild(cardElement);
 
-                
+                // alle Cards der HTML übergeben
                 document.getElementById("matches").appendChild(colDiv);
             });
         }
@@ -93,29 +107,31 @@
 <body>
     <!-- NAVIGATIONSLEISTE -->
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">
-                <h1 class="align-middle">Bundesliga-Tracker</h1></a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
-                aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-        </div>
-        <div class="collapse navbar-collapse me-2 float-end" id="navbarSupportedContent">
-            <div class="float-end">
-                <a class="navbar-brand" href="table.html">
-                    <h3 class="align-middle">Tabelle</h1>
+        <div class="container-fluid" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <a class="navbar-brand" href="#">
+                    <img src="data:image/jpeg;base64,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" 
+                    alt="Logo" width="60" height="60" class="d-inline-block align-text-middle">
                 </a>
-                
-            </div>
-            <div class="float-end">
-                <a class="navbar-brand" href="goalgetter.html">
-                    <h3 class="align-middle">Torschützen</h1>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="index.html">
+                    <h3>Aktueller Spieltag</h3>
                 </a>
-                
-            </div>
-        </div>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="table.html">
+                    <h3>Tabelle</h3>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="goalgetter.html">
+                    <h3>Torschützen</h3>
+                </a>
+              </li>
+            </ul>
+          </div>
     </nav>
 
     <div class="container mt-4">
